@@ -1,3 +1,5 @@
+require 'cask/all'
+
 cask 'vulkan-sdk' do
   version '1.1.77.0'
   sha256 '229d4c1cb0bf30c43fe91c9118dcf0d453af197b7289f1be646503c26fdd41f6'
@@ -8,13 +10,21 @@ cask 'vulkan-sdk' do
 
   depends_on macos: '>= :el_capitan'
 
-  binary "#{staged_path}/macOS/bin/vulkaninfo"
+  # binary "#{staged_path}/macOS/bin/vulkaninfo"
 
   # Move contents of redundant folder (that matches the name of the archive) up a folder
   # and then delete that folder.
   preflight do
     FileUtils.mv Dir.glob("#{staged_path}/vulkansdk-macos-#{version}/*"), staged_path.to_s
     FileUtils.remove_dir "#{staged_path}/vulkansdk-macos-#{version}"
+  end
+
+  postflight do
+    #FileUtils.ln_sf(staged_path.to_s, "#{HOMEBREW_PREFIX}/share/adobe-air-sdk")
+    FileUtils.ln_sf("#{staged_path}/macOS/include/vulkan", "/usr/local/include/vulkan")
+  end
+
+  uninstall_postflight do
   end
 
   caveats do
