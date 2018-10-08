@@ -19,7 +19,7 @@ cask 'vulkan-sdk' do
 
   postflight do
     #FileUtils.ln_sf(staged_path.to_s, "#{HOMEBREW_PREFIX}/share/adobe-air-sdk")
-    FileUtils.ln_sf("#{staged_path}/macOS/include/vulkan", "/usr/local/include/vulkan")
+    # FileUtils.ln_sf("#{staged_path}/macOS/include/vulkan", "/usr/local/include/vulkan")
   end
 
   uninstall_postflight do
