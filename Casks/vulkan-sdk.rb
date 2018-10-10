@@ -101,7 +101,7 @@ cask 'vulkan-sdk' do
     file = File.read("#{VK_ICD}/MoltenVK_icd.json")
     
     data_hash = JSON.parse(file)
-    data_hash["ICD"]["library_path"] = "#{DEST_LIB}/libvulkan.dylib"
+    data_hash["ICD"]["library_path"] = "#{DEST_LIB}/libMoltenVK.dylib"
 
     File.open("#{VK_ICD}/MoltenVK_icd.json", "w") do |f|
         f.write( JSON.pretty_generate(data_hash) + "\n" )
@@ -112,25 +112,28 @@ cask 'vulkan-sdk' do
     system_command '/bin/mkdir', args: ['-p', DEST_LAYER], sudo: true
 
     layers = [
-              "#{VK_LAYER}/VkLayer_core_validation.json",
-              "#{VK_LAYER}/VkLayer_object_tracker.json",
-              "#{VK_LAYER}/VkLayer_parameter_validation.json",
-              "#{VK_LAYER}/VkLayer_standard_validation.json",
-              "#{VK_LAYER}/VkLayer_threading.json",
-              "#{VK_LAYER}/VkLayer_unique_objects.json"
+              "VkLayer_core_validation",
+              "VkLayer_object_tracker",
+              "VkLayer_parameter_validation",
+              "VkLayer_standard_validation",
+              "VkLayer_threading",
+              "VkLayer_unique_objects"
               ]
     
-    layers.each do |layer_filename|
+    layers.each do |layer|
+        layer_filename = "#{VK_LAYER}/#{layer}.json",
         system_command '/bin/ln', args: ['-sf', layer_filename, DEST_LAYER], sudo: true        
 
-        #patching the file path in the json file
-        file = File.read(layer_filename)
-        
-        data_hash = JSON.parse(file)
-        data_hash["layer"]["library_path"] = "#{DEST_LIB}/libvulkan.dylib"
+        unless layer == "VkLayer_standard_validation"
+          #fix the file path in the json file
+          file = File.read(layer_filename)
+          
+          data_hash = JSON.parse(file)
+          data_hash["layer"]["library_path"] = "#{DEST_LIB}/#{layer}.dylib"
 
-        File.open(layer_filename, "w") do |f|
-            f.write( JSON.pretty_generate(data_hash) + "\n" )
+          File.open(layer_filename, "w") do |f|
+              f.write( JSON.pretty_generate(data_hash) + "\n" )
+          end
         end
 
     end
