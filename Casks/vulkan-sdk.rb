@@ -19,8 +19,8 @@ cask 'vulkan-sdk' do
   DEST_BIN          = "/usr/local/bin"
   DEST_LIB          = "/usr/local/lib"
   DEST_INCLUDE      = "/usr/local/include/vulkan"
-  DEST_ICD          = "/etc/vulkan/icd.d"
-  DEST_LAYER        = "/etc/vulkan/explicit_layer.d"
+  DEST_ICD          = "/usr/local/share/vulkan/icd.d"
+  DEST_LAYER        = "/usr/local/share/vulkan/explicit_layer.d"
 
   mylist = version.split(".")
   lib_version = mylist[0] + "." + mylist[1] + "." + mylist[2]
@@ -54,7 +54,7 @@ cask 'vulkan-sdk' do
     
     #VULKAN INCLUDE FILES
     #===============================================    
-    FileUtils.mkdir("/usr/local/include/vulkan") unless Dir.exist?("/usr/local/include/vulkan")
+    FileUtils.mkdir_p(DEST_INCLUDE) unless Dir.exist?(DEST_INCLUDE)
 
     FileUtils.ln_sf "#{VK_INCLUDE}/vk_icd.h",             DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vk_layer.h",           DEST_INCLUDE
@@ -93,8 +93,8 @@ cask 'vulkan-sdk' do
     
     #VULKAN ICD FOR MACOS
     #===============================================    
-    system_command '/bin/mkdir', args: ['-p', DEST_ICD], sudo: true
-    system_command '/bin/ln',    args: ['-sf', "#{VK_ICD}/MoltenVK_icd.json", DEST_ICD], sudo: true
+    FileUtils.mkdir_p(DEST_ICD) unless Dir.exist?(DEST_ICD)
+    FileUtils.ln_sf "#{VK_ICD}/MoltenVK_icd.json", DEST_ICD
 
     #The relative file path in this json file is invalid once these files are installed
     #in system directories.  So replace that path with an absolute path.
@@ -109,7 +109,7 @@ cask 'vulkan-sdk' do
 
     #VULKAN LAYERS FOR DEBUGGING
     #===============================================
-    system_command '/bin/mkdir', args: ['-p', DEST_LAYER], sudo: true
+    FileUtils.mkdir_p(DEST_LAYER) unless Dir.exist?(DEST_LAYER)
 
     layers = [
               "VkLayer_core_validation",
@@ -121,9 +121,9 @@ cask 'vulkan-sdk' do
               ]
     
     layers.each do |layer|
-        layer_filename = "#{VK_LAYER}/#{layer}.json",
-        system_command '/bin/ln', args: ['-sf', layer_filename, DEST_LAYER], sudo: true        
-
+        layer_filename = "#{VK_LAYER}/#{layer}.json"
+        FileUtils.ln_sf layer_filename, DEST_LAYER
+        
         unless layer == "VkLayer_standard_validation"
           #fix the file path in the json file
           file = File.read(layer_filename)
@@ -145,13 +145,9 @@ cask 'vulkan-sdk' do
 
   end
 
-  uninstall script: {
-                     executable: "/bin/rm",
-                     args: ['-rf', DEST_INCLUDE],
-                     sudo: true
-                    },
+  uninstall delete: DEST_INCLUDE
 
-            delete: [
+  uninstall delete: [
                       "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",
                       "#{DEST_LIB}/libvulkan.1.dylib",
                       "#{DEST_LIB}/libvulkan.dylib",
@@ -164,14 +160,16 @@ cask 'vulkan-sdk' do
                       "#{DEST_LIB}/libVkLayer_threading.dylib",             
                       "#{DEST_LIB}/libVkLayer_unique_objects.dylib",        
                       "#{DEST_LIB}/libshaderc_shared.dylib",                
-                    ],
+                    ]
+
+  uninstall delete: '/usr/local/share/vulkan'
             
-            #Deletes both ICDs & Explicit Layers
-            script: {
-                     executable: "/bin/rm",
-                     args: ['-rf', "/etc/vulkan"],
-                     sudo: true
-                    }
+            # #Deletes both ICDs & Explicit Layers
+            # script: {
+            #          executable: "/bin/rm",
+            #          args: ['-rf', "/usr/local/share/vulkan"],
+            #          # sudo: true
+            #         }
 
             # script: {
             #          executable: "/bin/rm",
