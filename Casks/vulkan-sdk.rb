@@ -1,6 +1,6 @@
 cask 'vulkan-sdk' do
-  version '1.1.77.0'
-  sha256 '229d4c1cb0bf30c43fe91c9118dcf0d453af197b7289f1be646503c26fdd41f6'
+  version '1.1.85.0'
+  sha256 '3860127c7aaf2a4f429fb3a3a83cc259b621e308870f33ae95f73abcfbd8ab4d'
 
   url "https://sdk.lunarg.com/sdk/download/#{version}/mac/vulkansdk-macos-#{version}.tar.gz"
   name 'LunarG Vulkan SDK'
@@ -8,26 +8,40 @@ cask 'vulkan-sdk' do
 
   depends_on macos: '>= :el_capitan'
 
-  # binary "#{staged_path}/macOS/bin/vulkaninfo"
-  binaries_list = Dir.glob("#{staged_path}/macOS/bin/*")
-  puts binaries_list
+  #==============================
 
-  binaries_list.each do |binary_filename|
-    binary binary_filename
-  end
+  VK_BIN      = "#{staged_path}/macOS/bin"
+  VK_LIB      = "#{staged_path}/macOS/lib"
+  VK_INCLUDE  = "#{staged_path}/macOS/include/vulkan"
+  VK_ICD      = "#{staged_path}/macOS/etc/vulkan/icd.d"
+  VK_LAYER    = "#{staged_path}/macOS/etc/vulkan/explicit_layer.d"
 
-  #global
-  list = version.split(".")
-  lib_version = list[0] + "." + list[1] + "." + list[2]
+  DEST_BIN          = "/usr/local/bin"
+  DEST_LIB          = "/usr/local/lib"
+  DEST_INCLUDE      = "/usr/local/include/vulkan"
+  DEST_ICD          = "/etc/vulkan/icd.d"
+  DEST_LAYER        = "/etc/vulkan/explicit_layer.d"
 
-  libvulkan_dylibs = ["libvulkan.dylib",
-                      "libvulkan.1.dylib",
-                      "libvulkan.#{lib_version}.dylib"]
+  mylist = version.split(".")
+  lib_version = mylist[0] + "." + mylist[1] + "." + mylist[2]
 
-  all_dylibs = Dir.glob("#{staged_path}/macOS/lib/*.dylib")
-  all_dylibs = all_dylibs.map{|x| File.basename(x)}
-  other_dylibs = all_dylibs - libvulkan_dylibs
+  #Vulkan Executable Binaries to Install
+  #============================== 
 
+  binary "#{VK_BIN}/glslangValidator"
+  binary "#{VK_BIN}/glslc"
+  binary "#{VK_BIN}/spirv-as"
+  binary "#{VK_BIN}/spirv-cross"
+  binary "#{VK_BIN}/spirv-dis"
+  binary "#{VK_BIN}/spirv-lesspipe.sh"
+  binary "#{VK_BIN}/spirv-link"
+  binary "#{VK_BIN}/spirv-opt"
+  binary "#{VK_BIN}/spirv-remap"
+  binary "#{VK_BIN}/spirv-stats"
+  binary "#{VK_BIN}/spirv-val"
+  binary "#{VK_BIN}/vulkaninfo"
+
+  #============================== 
 
   # Move contents of redundant folder (that matches the name of the archive) up a folder
   # and then delete that folder.
@@ -37,56 +51,83 @@ cask 'vulkan-sdk' do
   end
 
   postflight do
-    #include
+    
+    #VULKAN INCLUDE FILES
     #===============================================    
     FileUtils.mkdir("/usr/local/include/vulkan") unless Dir.exist?("/usr/local/include/vulkan")
-    FileUtils.ln_sf Dir.glob("#{staged_path}/macOS/include/vulkan/*"), "/usr/local/include/vulkan"
 
-    #dylib
+    FileUtils.ln_sf "#{VK_INCLUDE}/vk_icd.h",             DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vk_layer.h",           DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vk_platform.h",        DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vk_sdk_platform.h",    DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan.h",             DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan.hpp",           DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_android.h",     DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_core.h",        DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_ios.h",         DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_macos.h",       DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_mir.h",         DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_vi.h",          DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_wayland.h",     DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_win32.h",       DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_xcb.h",         DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_xlib.h",        DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_xlib_xrandr.h", DEST_INCLUDE
+
+
+    #VULKAN DYLIB FILES
     #===============================================
-    FileUtils.ln_sf "#{staged_path}/macOS/lib/libvulkan.#{lib_version}.dylib", "/usr/local/lib"
-    FileUtils.ln_sf "/usr/local/lib/libvulkan.#{lib_version}.dylib", "/usr/local/lib/libvulkan.1.dylib"
-    FileUtils.ln_sf "/usr/local/lib/libvulkan.1.dylib", "/usr/local/lib/libvulkan.dylib"
+    #Versioned libvulkan libraries
+    FileUtils.ln_sf "#{VK_LIB}/libvulkan.#{lib_version}.dylib",     DEST_LIB
+    FileUtils.ln_sf "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",   "#{DEST_LIB}/libvulkan.1.dylib"
+    FileUtils.ln_sf "#{DEST_LIB}/libvulkan.1.dylib",                "#{DEST_LIB}/libvulkan.dylib"
 
-    other_dylibs.each do |lib_filename|
-        FileUtils.ln_sf "#{staged_path}/macOS/lib/#{lib_filename}", "/usr/local/lib"
-    end
+    FileUtils.ln_sf "#{VK_LIB}/libMoltenVK.dylib",                      DEST_LIB
+    FileUtils.ln_sf "#{VK_LIB}/libSPIRV-Tools-shared.dylib",            DEST_LIB
+    FileUtils.ln_sf "#{VK_LIB}/libVkLayer_core_validation.dylib",       DEST_LIB
+    FileUtils.ln_sf "#{VK_LIB}/libVkLayer_object_tracker.dylib",        DEST_LIB
+    FileUtils.ln_sf "#{VK_LIB}/libVkLayer_parameter_validation.dylib",  DEST_LIB
+    FileUtils.ln_sf "#{VK_LIB}/libVkLayer_threading.dylib",             DEST_LIB
+    FileUtils.ln_sf "#{VK_LIB}/libVkLayer_unique_objects.dylib",        DEST_LIB
+    FileUtils.ln_sf "#{VK_LIB}/libshaderc_shared.dylib",                DEST_LIB
     
-    #ICD
-    #===============================================
-    # FileUtils.mkdir_p "/etc/vulkan/icd.d"
-    # FileUtils.ln_sf Dir.glob("#{staged_path}/macOS/etc/icd.d/*"), "/etc/vulkan/icd.d", sudo:true    
+    #VULKAN ICD FOR MACOS
+    #===============================================    
+    system_command '/bin/mkdir', args: ['-p', DEST_ICD], sudo: true
+    system_command '/bin/ln',    args: ['-sf', "#{VK_ICD}/MoltenVK_icd.json", DEST_ICD], sudo: true
 
-    system_command '/bin/mkdir', args: ['-p', "/etc/vulkan/icd.d"], sudo: true
-    system_command '/bin/ln', args: ['-sf', "#{staged_path}/macOS/etc/vulkan/icd.d/MoltenVK_icd.json", "/etc/vulkan/icd.d"], sudo: true
-
-    #patching the file path in the json file
-    file = File.read("#{staged_path}/macOS/etc/vulkan/icd.d/MoltenVK_icd.json")
+    #The relative file path in this json file is invalid once these files are installed
+    #in system directories.  So replace that path with an absolute path.
+    file = File.read("#{VK_ICD}/MoltenVK_icd.json")
     
     data_hash = JSON.parse(file)
-    data_hash["ICD"]["library_path"] = "#{staged_path}/macOS/lib/libvulkan.dylib"
+    data_hash["ICD"]["library_path"] = "#{DEST_LIB}/libvulkan.dylib"
 
-    File.open("#{staged_path}/macOS/etc/vulkan/icd.d/MoltenVK_icd.json", "w") do |f|
+    File.open("#{VK_ICD}/MoltenVK_icd.json", "w") do |f|
         f.write( JSON.pretty_generate(data_hash) + "\n" )
     end
 
-    # #layers
+    #VULKAN LAYERS FOR DEBUGGING
     #===============================================
-    # FileUtils.mkdir_p "/etc/vulkan/explicit_layer.d", sudo:true
-    # FileUtils.ln_sf Dir.glob("#{staged_path}/macOS/etc/vulkan/*"), "/etc/vulkan/explicit_layer.d", sudo:true    
+    system_command '/bin/mkdir', args: ['-p', DEST_LAYER], sudo: true
 
-    system_command '/bin/mkdir', args: ['-p', "/etc/vulkan/explicit_layer.d"], sudo: true
-    explicit_layers = Dir.glob("#{staged_path}/macOS/etc/vulkan/explicit_layer.d/*")
+    layers = [
+              "#{VK_LAYER}/VkLayer_core_validation.json",
+              "#{VK_LAYER}/VkLayer_object_tracker.json",
+              "#{VK_LAYER}/VkLayer_parameter_validation.json",
+              "#{VK_LAYER}/VkLayer_standard_validation.json",
+              "#{VK_LAYER}/VkLayer_threading.json",
+              "#{VK_LAYER}/VkLayer_unique_objects.json"
+              ]
     
-    explicit_layers.each do |layer_filename|
-        system_command '/bin/ln', args: ['-sf', layer_filename, "/etc/vulkan/explicit_layer.d"], sudo: true        
+    layers.each do |layer_filename|
+        system_command '/bin/ln', args: ['-sf', layer_filename, DEST_LAYER], sudo: true        
 
         #patching the file path in the json file
         file = File.read(layer_filename)
         
         data_hash = JSON.parse(file)
-        data_hash["layer"]["library_path"] = "#{staged_path}/macOS/lib/libvulkan.dylib"
-        #puts data_hash["layer"]["library_path"]
+        data_hash["layer"]["library_path"] = "#{DEST_LIB}/libvulkan.dylib"
 
         File.open(layer_filename, "w") do |f|
             f.write( JSON.pretty_generate(data_hash) + "\n" )
@@ -94,28 +135,46 @@ cask 'vulkan-sdk' do
 
     end
 
-    #Framework
-    #===============================================
-    system_command '/bin/cp', args: ['-r', "#{staged_path}/macOS/Frameworks/vulkan.framework", "/Library/Frameworks"], sudo: true
+    # #Framework
+    # #===============================================
+    # system_command '/bin/cp', args: ['-r', "#{staged_path}/macOS/Frameworks/vulkan.framework", "/Library/Frameworks"], sudo: true
     
 
   end
 
-  uninstall delete: ["/usr/local/include/vulkan"],
+  uninstall script: {
+                     executable: "/bin/rm",
+                     args: ['-rf', DEST_INCLUDE],
+                     sudo: true
+                    },
 
-            delete: all_dylibs.map{|x| "/usr/local/lib/" + x},
+            delete: [
+                      "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",
+                      "#{DEST_LIB}/libvulkan.1.dylib",
+                      "#{DEST_LIB}/libvulkan.dylib",
+
+                      "#{DEST_LIB}/libMoltenVK.dylib",                      
+                      "#{DEST_LIB}/libSPIRV-Tools-shared.dylib",            
+                      "#{DEST_LIB}/libVkLayer_core_validation.dylib",       
+                      "#{DEST_LIB}/libVkLayer_object_tracker.dylib",        
+                      "#{DEST_LIB}/libVkLayer_parameter_validation.dylib",  
+                      "#{DEST_LIB}/libVkLayer_threading.dylib",             
+                      "#{DEST_LIB}/libVkLayer_unique_objects.dylib",        
+                      "#{DEST_LIB}/libshaderc_shared.dylib",                
+                    ],
             
+            #Deletes both ICDs & Explicit Layers
             script: {
                      executable: "/bin/rm",
                      args: ['-rf', "/etc/vulkan"],
                      sudo: true
-                    },
-
-            script: {
-                     executable: "/bin/rm",
-                     args: ['-rf', "/Library/Frameworks/vulkan.framework"],
-                     sudo: true
                     }
+
+            # script: {
+            #          executable: "/bin/rm",
+            #          args: ['-rf', "/Library/Frameworks/vulkan.framework"],
+            #          sudo: true
+            #         }
 
   caveats do
     license 'https://vulkan.lunarg.com/sdk/home#sdk-license'
