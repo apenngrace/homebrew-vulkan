@@ -129,7 +129,8 @@ cask 'vulkan-sdk' do
           file = File.read(layer_filename)
           
           data_hash = JSON.parse(file)
-          data_hash["layer"]["library_path"] = "#{DEST_LIB}/#{layer}.dylib"
+          layer_lib_filename = "lib#{layer}.dylib"
+          data_hash["layer"]["library_path"] = "#{DEST_LIB}/#{layer_lib_filename}"
 
           File.open(layer_filename, "w") do |f|
               f.write( JSON.pretty_generate(data_hash) + "\n" )
