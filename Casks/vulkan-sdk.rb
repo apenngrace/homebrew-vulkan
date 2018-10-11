@@ -138,12 +138,6 @@ cask 'vulkan-sdk' do
         end
 
     end
-
-    # #Framework
-    # #===============================================
-    # system_command '/bin/cp', args: ['-r', "#{staged_path}/macOS/Frameworks/vulkan.framework", "/Library/Frameworks"], sudo: true
-    
-
   end
 
   uninstall delete: DEST_INCLUDE
@@ -164,19 +158,6 @@ cask 'vulkan-sdk' do
                     ]
 
   uninstall delete: '/usr/local/share/vulkan'
-            
-            # #Deletes both ICDs & Explicit Layers
-            # script: {
-            #          executable: "/bin/rm",
-            #          args: ['-rf', "/usr/local/share/vulkan"],
-            #          # sudo: true
-            #         }
-
-            # script: {
-            #          executable: "/bin/rm",
-            #          args: ['-rf', "/Library/Frameworks/vulkan.framework"],
-            #          sudo: true
-            #         }
 
   caveats do
     license 'https://vulkan.lunarg.com/sdk/home#sdk-license'
