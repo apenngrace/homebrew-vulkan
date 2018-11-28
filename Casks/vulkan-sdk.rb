@@ -1,6 +1,6 @@
 cask 'vulkan-sdk' do
-  version '1.1.85.0'
-  sha256 '3860127c7aaf2a4f429fb3a3a83cc259b621e308870f33ae95f73abcfbd8ab4d'
+  version '1.1.92.1'
+  sha256 '1dc5c758ba83cc0b1e3baa533a5b2052afa378df87a84ee3e56ab6d97df12865'
 
   url "https://sdk.lunarg.com/sdk/download/#{version}/mac/vulkansdk-macos-#{version}.tar.gz"
   name 'LunarG Vulkan SDK'
@@ -64,6 +64,7 @@ cask 'vulkan-sdk' do
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan.hpp",           DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_android.h",     DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_core.h",        DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_fuchsia.h",     DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_ios.h",         DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_macos.h",       DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_mir.h",         DEST_INCLUDE
