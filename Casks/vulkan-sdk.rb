@@ -2,11 +2,9 @@ cask 'vulkan-sdk' do
   version '1.1.92.1_1'
   sha256 '1dc5c758ba83cc0b1e3baa533a5b2052afa378df87a84ee3e56ab6d97df12865'
   
-  if version.index('_')
-    version = version.slice(0..(version.index('_')))
-  end
+  tmp_version = '1.1.92.1'
 
-  url "https://sdk.lunarg.com/sdk/download/#{version}/mac/vulkansdk-macos-#{version}.tar.gz"
+  url "https://sdk.lunarg.com/sdk/download/#{tmp_version}/mac/vulkansdk-macos-#{tmp_version}.tar.gz"
   name 'LunarG Vulkan SDK'
   homepage 'https://vulkan.lunarg.com/sdk/home'
 
@@ -26,7 +24,7 @@ cask 'vulkan-sdk' do
   DEST_ICD          = "/usr/local/share/vulkan/icd.d"
   DEST_LAYER        = "/usr/local/share/vulkan/explicit_layer.d"
   
-  mylist = version.split(".")
+  mylist = tmp_version.split(".")
   lib_version = mylist[0] + "." + mylist[1] + "." + mylist[2]
 
   #Vulkan Executable Binaries to Install
