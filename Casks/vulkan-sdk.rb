@@ -1,6 +1,6 @@
 cask 'vulkan-sdk' do
-  version '1.1.92.1'
-  sha256 '1dc5c758ba83cc0b1e3baa533a5b2052afa378df87a84ee3e56ab6d97df12865'
+  version '1.1.97.0'
+  sha256 'a84a6432e049bb7621a6bf2bf643fa19c863fa4f3d8e6ddac9a102036c461edd'
 
   url "https://sdk.lunarg.com/sdk/download/#{version}/mac/vulkansdk-macos-#{version}.tar.gz"
   name 'LunarG Vulkan SDK'
@@ -92,13 +92,6 @@ cask 'vulkan-sdk' do
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_unique_objects.dylib",        DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libshaderc_shared.dylib",                DEST_LIB
     
-    #In version 1.1.92.1 LunarG forgot to build libshaderc_shared.1.dylib... 
-    #so manually downloading it from their forum post.
-    #The '-k' argument is there so that https will work.
-    
-    system_command '/usr/bin/curl', args: ['-k', 
-      "https://vulkan.lunarg.com/issue/file/5bfee3d366315165b412a8ee/upload/1543446619_libshaderc_shared.1.dylib", 
-      '-o', "#{VK_LIB}/libshaderc_shared.1.dylib"]
     
     #VULKAN ICD FOR MACOS
     #===============================================    
