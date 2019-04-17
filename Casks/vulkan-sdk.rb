@@ -160,8 +160,8 @@ cask 'vulkan-sdk' do
                       "#{DEST_LIB}/libvulkan.1.dylib",
                       "#{DEST_LIB}/libvulkan.dylib",
     
-                      "#{DEST_LIB}/libsharedc_shared.1.dylib",
-                      "#{DEST_LIB}/libsharedc_shared.dylib",
+                      "#{DEST_LIB}/libshaderc_shared.1.dylib",
+                      "#{DEST_LIB}/libshaderc_shared.dylib",
     
                       "#{DEST_LIB}/libMoltenVK.dylib",
                       "#{DEST_LIB}/libSPIRV-Tools-shared.dylib",
