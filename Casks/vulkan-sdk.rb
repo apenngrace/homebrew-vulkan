@@ -165,7 +165,6 @@ cask 'vulkan-sdk' do
     
                       "#{DEST_LIB}/libMoltenVK.dylib",
                       "#{DEST_LIB}/libSPIRV-Tools-shared.dylib",
-                      "#{DEST_LIB}/libshaderc_shared.dylib",
     
                       "#{DEST_LIB}/libVkLayer_api_dump.dylib",
                       "#{DEST_LIB}/libVkLayer_core_validation.dylib",
