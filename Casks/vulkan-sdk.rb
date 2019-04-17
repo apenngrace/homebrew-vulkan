@@ -31,11 +31,13 @@ cask 'vulkan-sdk' do
   binary "#{VK_BIN}/glslangValidator"
   binary "#{VK_BIN}/glslc"
   binary "#{VK_BIN}/spirv-as"
+  binary "#{VK_BIN}/spirv-cfg"
   binary "#{VK_BIN}/spirv-cross"
   binary "#{VK_BIN}/spirv-dis"
   binary "#{VK_BIN}/spirv-lesspipe.sh"
   binary "#{VK_BIN}/spirv-link"
   binary "#{VK_BIN}/spirv-opt"
+  binary "#{VK_BIN}/spirv-reduce"
   binary "#{VK_BIN}/spirv-remap"
   binary "#{VK_BIN}/spirv-stats"
   binary "#{VK_BIN}/spirv-val"
@@ -65,9 +67,10 @@ cask 'vulkan-sdk' do
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_android.h",     DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_core.h",        DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_fuchsia.h",     DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_ggp.h",         DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_ios.h",         DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_macos.h",       DEST_INCLUDE
-    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_mir.h",         DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_metal.h",       DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_vi.h",          DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_wayland.h",     DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_win32.h",       DEST_INCLUDE
@@ -82,10 +85,12 @@ cask 'vulkan-sdk' do
     FileUtils.ln_sf "#{VK_LIB}/libvulkan.#{lib_version}.dylib",     DEST_LIB
     FileUtils.ln_sf "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",   "#{DEST_LIB}/libvulkan.1.dylib"
     FileUtils.ln_sf "#{DEST_LIB}/libvulkan.1.dylib",                "#{DEST_LIB}/libvulkan.dylib"
-
+    
+    FileUtils.ln_sf "#{VK_LIB}/libshaderc_shared.1.dylib",          "#{DEST_LIB}/libshaderc_shared.1.dylib"
+    FileUtils.ln_sf "#{DEST_LIB}/libshaderc_shared.1.dylib",        "#{DEST_LIB}/libshaderc_shared.dylib"
+    
     FileUtils.ln_sf "#{VK_LIB}/libMoltenVK.dylib",                      DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libSPIRV-Tools-shared.dylib",            DEST_LIB
-    FileUtils.ln_sf "#{VK_LIB}/libshaderc_shared.dylib",                DEST_LIB
     
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_api_dump.dylib",              DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_core_validation.dylib",       DEST_LIB
@@ -154,6 +159,9 @@ cask 'vulkan-sdk' do
                       "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",
                       "#{DEST_LIB}/libvulkan.1.dylib",
                       "#{DEST_LIB}/libvulkan.dylib",
+    
+                      "#{DEST_LIB}/libsharedc_shared.1.dylib",
+                      "#{DEST_LIB}/libsharedc_shared.dylib",
     
                       "#{DEST_LIB}/libMoltenVK.dylib",
                       "#{DEST_LIB}/libSPIRV-Tools-shared.dylib",
