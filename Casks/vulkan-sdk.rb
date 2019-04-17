@@ -1,6 +1,6 @@
 cask 'vulkan-sdk' do
-  version '1.1.101.0'
-  sha256 'b175849a1c609b561ef2406ced3f2e408af2970725a45f49547d03cefd5bbc39'
+  version '1.1.106.0'
+  sha256 '3806e7d0550ee00c61ae5ea45e9e87babcd952f1b4705232dc420ddc3e865314'
 
   url "https://sdk.lunarg.com/sdk/download/#{version}/mac/vulkansdk-macos-#{version}.tar.gz?Human=true"
   name 'LunarG Vulkan SDK'
@@ -85,12 +85,16 @@ cask 'vulkan-sdk' do
 
     FileUtils.ln_sf "#{VK_LIB}/libMoltenVK.dylib",                      DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libSPIRV-Tools-shared.dylib",            DEST_LIB
+    FileUtils.ln_sf "#{VK_LIB}/libshaderc_shared.dylib",                DEST_LIB
+    
+    FileUtils.ln_sf "#{VK_LIB}/libVkLayer_api_dump.dylib",              DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_core_validation.dylib",       DEST_LIB
+    FileUtils.ln_sf "#{VK_LIB}/libVkLayer_khronos_validation.dylib",    DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_object_lifetimes.dylib",      DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_stateless_validation.dylib",  DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_thread_safety.dylib",         DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_unique_objects.dylib",        DEST_LIB
-    FileUtils.ln_sf "#{VK_LIB}/libshaderc_shared.dylib",                DEST_LIB
+
     
     
     #VULKAN ICD FOR MACOS
@@ -114,7 +118,9 @@ cask 'vulkan-sdk' do
     FileUtils.mkdir_p(DEST_LAYER) unless Dir.exist?(DEST_LAYER)
 
     layers = [
+              "VkLayer_api_dump",
               "VkLayer_core_validation",
+              "VkLayer_khronos_validation",
               "VkLayer_object_lifetimes",
               "VkLayer_standard_validation",
               "VkLayer_stateless_validation",
@@ -148,15 +154,18 @@ cask 'vulkan-sdk' do
                       "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",
                       "#{DEST_LIB}/libvulkan.1.dylib",
                       "#{DEST_LIB}/libvulkan.dylib",
-
-                      "#{DEST_LIB}/libMoltenVK.dylib",                    
-                      "#{DEST_LIB}/libSPIRV-Tools-shared.dylib",          
-                      "#{DEST_LIB}/libVkLayer_core_validation.dylib",     
-                      "#{DEST_LIB}/libVkLayer_object_lifetimes.dylib",    
+    
+                      "#{DEST_LIB}/libMoltenVK.dylib",
+                      "#{DEST_LIB}/libSPIRV-Tools-shared.dylib",
+                      "#{DEST_LIB}/libshaderc_shared.dylib",
+    
+                      "#{DEST_LIB}/libVkLayer_api_dump.dylib",
+                      "#{DEST_LIB}/libVkLayer_core_validation.dylib",
+                      "#{DEST_LIB}/libVkLayer_khronos_validation.dylib",
+                      "#{DEST_LIB}/libVkLayer_object_lifetimes.dylib",
                       "#{DEST_LIB}/libVkLayer_stateless_validation.dylib",
-                      "#{DEST_LIB}/libVkLayer_thread_safety.dylib",       
-                      "#{DEST_LIB}/libVkLayer_unique_objects.dylib",      
-                      "#{DEST_LIB}/libshaderc_shared.dylib",                             
+                      "#{DEST_LIB}/libVkLayer_thread_safety.dylib",
+                      "#{DEST_LIB}/libVkLayer_unique_objects.dylib"
                     ]
 
   uninstall delete: '/usr/local/share/vulkan'
