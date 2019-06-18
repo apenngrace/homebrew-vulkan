@@ -1,6 +1,6 @@
 cask 'vulkan-sdk' do
-  version '1.1.106.0'
-  sha256 '3806e7d0550ee00c61ae5ea45e9e87babcd952f1b4705232dc420ddc3e865314'
+  version '1.1.108.0'
+  sha256 'f493b0e9abc73e80a29fa24ef9bae3c2311513df973ade6ffc56008c30eaf60d'
 
   url "https://sdk.lunarg.com/sdk/download/#{version}/mac/vulkansdk-macos-#{version}.tar.gz?Human=true"
   name 'LunarG Vulkan SDK'
@@ -39,7 +39,6 @@ cask 'vulkan-sdk' do
   binary "#{VK_BIN}/spirv-opt"
   binary "#{VK_BIN}/spirv-reduce"
   binary "#{VK_BIN}/spirv-remap"
-  binary "#{VK_BIN}/spirv-stats"
   binary "#{VK_BIN}/spirv-val"
   binary "#{VK_BIN}/vulkaninfo"
 
