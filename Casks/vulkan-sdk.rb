@@ -13,12 +13,16 @@ cask 'vulkan-sdk' do
   VK_BIN      = "#{staged_path}/macOS/bin"
   VK_LIB      = "#{staged_path}/macOS/lib"
   VK_INCLUDE  = "#{staged_path}/macOS/include/vulkan"
+  MVK_INCLUDE = "#{staged_path}/MoltenVK/include/MoltenVK/"
+  PORT_INCLUDE = "#{staged_path}/MoltenVK/include/vulkan-portability/"
   VK_ICD      = "#{staged_path}/macOS/etc/vulkan/icd.d"
   VK_LAYER    = "#{staged_path}/macOS/etc/vulkan/explicit_layer.d"
 
   DEST_BIN          = "/usr/local/bin"
   DEST_LIB          = "/usr/local/lib"
   DEST_INCLUDE      = "/usr/local/include/vulkan"
+  DEST_INCLUDE_MVK  = "/usr/local/include/MoltenVK"
+  DEST_INCLUDE_PORT  = "/usr/local/include/vulkan-portability"
   DEST_ICD          = "/usr/local/share/vulkan/icd.d"
   DEST_LAYER        = "/usr/local/share/vulkan/explicit_layer.d"
   
@@ -76,6 +80,12 @@ cask 'vulkan-sdk' do
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_xcb.h",         DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_xlib.h",        DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_xlib_xrandr.h", DEST_INCLUDE
+
+    FileUtils.ln_sf "#{MVK_INCLUDE}/mvk_vulkan.h",        DEST_INCLUDE_MVK
+    FileUtils.ln_sf "#{MVK_INCLUDE}/mvk_datatypes.h",     DEST_INCLUDE_MVK
+    FileUtils.ln_sf "#{MVK_INCLUDE}/vk_mvk_moltenvk.h",   DEST_INCLUDE_MVK
+
+    FileUtils.ln_sf "#{PORT_INCLUDE}/vk_mvk_moltenvk.h",   DEST_INCLUDE_PORT
 
 
     #VULKAN DYLIB FILES
