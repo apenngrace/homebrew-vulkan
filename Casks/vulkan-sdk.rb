@@ -10,21 +10,21 @@ cask 'vulkan-sdk' do
 
   #==============================
 
-  VK_BIN      = "#{staged_path}/macOS/bin"
-  VK_LIB      = "#{staged_path}/macOS/lib"
-  VK_INCLUDE  = "#{staged_path}/macOS/include/vulkan"
-  MVK_INCLUDE = "#{staged_path}/MoltenVK/include/MoltenVK"
+  VK_BIN       = "#{staged_path}/macOS/bin"
+  VK_LIB       = "#{staged_path}/macOS/lib"
+  VK_INCLUDE   = "#{staged_path}/macOS/include/vulkan"
+  MVK_INCLUDE  = "#{staged_path}/MoltenVK/include/MoltenVK"
   PORT_INCLUDE = "#{staged_path}/MoltenVK/include/vulkan-portability"
-  VK_ICD      = "#{staged_path}/macOS/etc/vulkan/icd.d"
-  VK_LAYER    = "#{staged_path}/macOS/etc/vulkan/explicit_layer.d"
+  VK_ICD       = "#{staged_path}/macOS/etc/vulkan/icd.d"
+  VK_LAYER     = "#{staged_path}/macOS/etc/vulkan/explicit_layer.d"
 
-  DEST_BIN          = "/usr/local/bin"
-  DEST_LIB          = "/usr/local/lib"
-  DEST_INCLUDE      = "/usr/local/include/vulkan"
-  DEST_INCLUDE_MVK  = "/usr/local/include/MoltenVK"
+  DEST_BIN           = "/usr/local/bin"
+  DEST_LIB           = "/usr/local/lib"
+  DEST_INCLUDE       = "/usr/local/include/vulkan"
+  DEST_INCLUDE_MVK   = "/usr/local/include/MoltenVK"
   DEST_INCLUDE_PORT  = "/usr/local/include/vulkan-portability"
-  DEST_ICD          = "/usr/local/share/vulkan/icd.d"
-  DEST_LAYER        = "/usr/local/share/vulkan/explicit_layer.d"
+  DEST_ICD           = "/usr/local/share/vulkan/icd.d"
+  DEST_LAYER         = "/usr/local/share/vulkan/explicit_layer.d"
   
   mylist = version.split(".")
   lib_version = mylist[0] + "." + mylist[1] + "." + mylist[2]
@@ -83,6 +83,8 @@ cask 'vulkan-sdk' do
 
     FileUtils.mkdir_p(DEST_INCLUDE_MVK) unless Dir.exist?(DEST_INCLUDE_MVK)
 
+    #Added for campatibility issues per:
+    #https://github.com/KhronosGroup/MoltenVK/issues/492
     FileUtils.ln_sf "#{MVK_INCLUDE}/mvk_vulkan.h",        DEST_INCLUDE_MVK
     FileUtils.ln_sf "#{MVK_INCLUDE}/mvk_datatypes.h",     DEST_INCLUDE_MVK
     FileUtils.ln_sf "#{MVK_INCLUDE}/vk_mvk_moltenvk.h",   DEST_INCLUDE_MVK
@@ -167,6 +169,8 @@ cask 'vulkan-sdk' do
   end
 
   uninstall delete: DEST_INCLUDE
+  uninstall delete: DEST_INCLUDE_MVK
+  uninstall delete: DEST_INCLUDE_PORT
 
   uninstall delete: [
                       "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",
