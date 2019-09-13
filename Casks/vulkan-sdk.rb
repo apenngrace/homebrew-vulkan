@@ -44,6 +44,7 @@ cask 'vulkan-sdk' do
   binary "#{VK_BIN}/spirv-reduce"
   binary "#{VK_BIN}/spirv-remap"
   binary "#{VK_BIN}/spirv-val"
+  binary "#{VK_BIN}/vkvia"
   binary "#{VK_BIN}/vulkaninfo"
 
   #============================== 
