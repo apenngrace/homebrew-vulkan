@@ -1,6 +1,6 @@
 cask 'vulkan-sdk' do
-  version '1.1.121.1'
-  sha256 'c4a177a2a08bb2496dff02cdc1730ce5893c599ae9b6b9867895970a5f987c4f'
+  version '1.1.126.0'
+  sha256 '1ae62cc33227cbb32eff50951011405b0afa7a220765df06a975d6334cc45db4'
 
   url "https://sdk.lunarg.com/sdk/download/#{version}/mac/vulkansdk-macos-#{version}.tar.gz?Human=true"
   name 'LunarG Vulkan SDK'
@@ -140,13 +140,8 @@ cask 'vulkan-sdk' do
 
     layers = [
               "VkLayer_api_dump",
-              "VkLayer_core_validation",
               "VkLayer_khronos_validation",
-              "VkLayer_object_lifetimes",
-              "VkLayer_standard_validation",
-              "VkLayer_stateless_validation",
-              "VkLayer_thread_safety",
-              "VkLayer_unique_objects"
+              "VkLayer_standard_validation"          
               ]
     
     layers.each do |layer|
