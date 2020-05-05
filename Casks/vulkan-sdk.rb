@@ -1,6 +1,6 @@
 cask 'vulkan-sdk' do
-  version '1.2.131.1'
-  sha256 'fbc01a433d61d303dd3ceef19a12a99ba3431498de2d761679073f12b05a7870'
+  version '1.2.135.0'
+  sha256 '81da27908836f6f5f41ed7962ff1b4be56ded3b447d4802a98b253d492f985cf'
 
   url "https://sdk.lunarg.com/sdk/download/#{version}/mac/vulkansdk-macos-#{version}.tar.gz?Human=true"
   name 'LunarG Vulkan SDK'
@@ -10,22 +10,24 @@ cask 'vulkan-sdk' do
 
   #==============================
 
-  VK_BIN       = "#{staged_path}/macOS/bin"
-  VK_LIB       = "#{staged_path}/macOS/lib"
-  VK_INCLUDE   = "#{staged_path}/macOS/include/vulkan"
-  MVK_INCLUDE  = "#{staged_path}/MoltenVK/include/MoltenVK"
-  PORT_INCLUDE = "#{staged_path}/MoltenVK/include/vulkan-portability"
-  VK_ICD       = "#{staged_path}/macOS/etc/vulkan/icd.d"
-  VK_LAYER     = "#{staged_path}/macOS/etc/vulkan/explicit_layer.d"
+  VK_BIN          = "#{staged_path}/macOS/bin"
+  VK_LIB          = "#{staged_path}/macOS/lib"
+  VK_INCLUDE      = "#{staged_path}/macOS/include/vulkan"
+  MVK_INCLUDE     = "#{staged_path}/MoltenVK/include/MoltenVK"
+  PORT_INCLUDE    = "#{staged_path}/MoltenVK/include/vulkan-portability"
+  SHADERC_INCLUDE = "#{staged_path}/macOS/include/shaderc"
+  VK_ICD          = "#{staged_path}/macOS/share/vulkan/icd.d"
+  VK_LAYER        = "#{staged_path}/macOS/share/vulkan/explicit_layer.d"
 
-  DEST_BIN           = "/usr/local/bin"
-  DEST_LIB           = "/usr/local/lib"
-  DEST_INCLUDE       = "/usr/local/include/vulkan"
-  DEST_INCLUDE_MVK   = "/usr/local/include/MoltenVK"
-  DEST_INCLUDE_PORT  = "/usr/local/include/vulkan-portability"
-  DEST_ICD           = "/usr/local/share/vulkan/icd.d"
-  DEST_LAYER         = "/usr/local/share/vulkan/explicit_layer.d"
-  
+  DEST_BIN             = "/usr/local/bin"
+  DEST_LIB             = "/usr/local/lib"
+  DEST_INCLUDE         = "/usr/local/include/vulkan"
+  DEST_INCLUDE_MVK     = "/usr/local/include/MoltenVK"
+  DEST_INCLUDE_PORT    = "/usr/local/include/vulkan-portability"
+  DEST_INCLUDE_SHADERC = "/usr/local/include/shaderc"
+  DEST_ICD             = "/usr/local/share/vulkan/icd.d"
+  DEST_LAYER           = "/usr/local/share/vulkan/explicit_layer.d"
+
   mylist = version.split(".")
   lib_version = mylist[0] + "." + mylist[1] + "." + mylist[2]
 
@@ -94,6 +96,13 @@ cask 'vulkan-sdk' do
 
     FileUtils.ln_sf "#{PORT_INCLUDE}/vk_extx_portability_subset.h",   DEST_INCLUDE_PORT
 
+    FileUtils.mkdir_p(DEST_INCLUDE_SHADERC) unless Dir.exist?(DEST_INCLUDE_SHADERC)
+
+    FileUtils.ln_sf "#{SHADERC_INCLUDE}/env.h",        DEST_INCLUDE_SHADERC
+    FileUtils.ln_sf "#{SHADERC_INCLUDE}/shaderc.h",    DEST_INCLUDE_SHADERC
+    FileUtils.ln_sf "#{SHADERC_INCLUDE}/shaderc.hpp",  DEST_INCLUDE_SHADERC
+    FileUtils.ln_sf "#{SHADERC_INCLUDE}/status.h",     DEST_INCLUDE_SHADERC
+    FileUtils.ln_sf "#{SHADERC_INCLUDE}/visibility.h", DEST_INCLUDE_SHADERC
 
     #VULKAN DYLIB FILES
     #===============================================
@@ -141,7 +150,6 @@ cask 'vulkan-sdk' do
     layers = [
               "VkLayer_api_dump",
               "VkLayer_khronos_validation",
-              "VkLayer_standard_validation"          
               ]
     
     layers.each do |layer|
@@ -167,6 +175,7 @@ cask 'vulkan-sdk' do
   uninstall delete: DEST_INCLUDE
   uninstall delete: DEST_INCLUDE_MVK
   uninstall delete: DEST_INCLUDE_PORT
+  uninstall delete: DEST_INCLUDE_SHADERC
 
   uninstall delete: [
                       "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",
