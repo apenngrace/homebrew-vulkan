@@ -1,6 +1,6 @@
 cask 'vulkan-sdk' do
-  version '1.2.135.0'
-  sha256 '81da27908836f6f5f41ed7962ff1b4be56ded3b447d4802a98b253d492f985cf'
+  version '1.2.141.1'
+  sha256 '5b9b8a3d75b96e5f6f925ddb682d0a891089e21cb483b0f352c34baa78b1fa58'
 
   url "https://sdk.lunarg.com/sdk/download/#{version}/mac/vulkansdk-macos-#{version}.tar.gz?Human=true"
   name 'LunarG Vulkan SDK'
