@@ -1,14 +1,14 @@
 cask 'vulkan-sdk' do
-  version '1.2.135.0'
-  sha256 '81da27908836f6f5f41ed7962ff1b4be56ded3b447d4802a98b253d492f985cf'
+  version '1.2.141.1'
+  sha256 '5b9b8a3d75b96e5f6f925ddb682d0a891089e21cb483b0f352c34baa78b1fa58'
 
-  url "https://sdk.lunarg.com/sdk/download/#{version}/mac/vulkansdk-macos-#{version}.tar.gz?Human=true"
+  url "https://sdk.lunarg.com/sdk/download/#{version}/mac/vulkansdk-macos-#{version}.dmg?Human=true"
   name 'LunarG Vulkan SDK'
   homepage 'https://vulkan.lunarg.com/sdk/home'
 
   depends_on macos: '>= :el_capitan'
-
-  #==============================
+  
+  # ==============================
 
   VK_BIN          = "#{staged_path}/macOS/bin"
   VK_LIB          = "#{staged_path}/macOS/lib"
@@ -32,7 +32,7 @@ cask 'vulkan-sdk' do
   lib_version = mylist[0] + "." + mylist[1] + "." + mylist[2]
 
   #Vulkan Executable Binaries to Install
-  #============================== 
+  #==============================
 
   binary "#{VK_BIN}/glslangValidator"
   binary "#{VK_BIN}/glslc"
@@ -49,19 +49,12 @@ cask 'vulkan-sdk' do
   binary "#{VK_BIN}/vkvia"
   binary "#{VK_BIN}/vulkaninfo"
 
-  #============================== 
-
-  # Move contents of redundant folder (that matches the name of the archive) up a folder
-  # and then delete that folder.
-  preflight do
-    FileUtils.mv Dir.glob("#{staged_path}/vulkansdk-macos-#{version}/*"), staged_path.to_s
-    FileUtils.remove_dir "#{staged_path}/vulkansdk-macos-#{version}"
-  end
+  #==============================
 
   postflight do
-    
+
     #VULKAN INCLUDE FILES
-    #===============================================    
+    #===============================================
     FileUtils.mkdir_p(DEST_INCLUDE) unless Dir.exist?(DEST_INCLUDE)
 
     FileUtils.ln_sf "#{VK_INCLUDE}/vk_icd.h",             DEST_INCLUDE
@@ -110,13 +103,13 @@ cask 'vulkan-sdk' do
     FileUtils.ln_sf "#{VK_LIB}/libvulkan.#{lib_version}.dylib",     DEST_LIB
     FileUtils.ln_sf "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",   "#{DEST_LIB}/libvulkan.1.dylib"
     FileUtils.ln_sf "#{DEST_LIB}/libvulkan.1.dylib",                "#{DEST_LIB}/libvulkan.dylib"
-    
+
     FileUtils.ln_sf "#{VK_LIB}/libshaderc_shared.1.dylib",          "#{DEST_LIB}/libshaderc_shared.1.dylib"
     FileUtils.ln_sf "#{DEST_LIB}/libshaderc_shared.1.dylib",        "#{DEST_LIB}/libshaderc_shared.dylib"
-    
+
     FileUtils.ln_sf "#{VK_LIB}/libMoltenVK.dylib",                      DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libSPIRV-Tools-shared.dylib",            DEST_LIB
-    
+
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_api_dump.dylib",              DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_core_validation.dylib",       DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_khronos_validation.dylib",    DEST_LIB
@@ -125,17 +118,17 @@ cask 'vulkan-sdk' do
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_thread_safety.dylib",         DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_unique_objects.dylib",        DEST_LIB
 
-    
-    
+
+
     #VULKAN ICD FOR MACOS
-    #===============================================    
+    #===============================================
     FileUtils.mkdir_p(DEST_ICD) unless Dir.exist?(DEST_ICD)
     FileUtils.ln_sf "#{VK_ICD}/MoltenVK_icd.json", DEST_ICD
 
     #The relative file path in this json file is invalid once these files are installed
     #in system directories.  So replace that path with an absolute path.
     file = File.read("#{VK_ICD}/MoltenVK_icd.json")
-    
+
     data_hash = JSON.parse(file)
     data_hash["ICD"]["library_path"] = "#{DEST_LIB}/libMoltenVK.dylib"
 
@@ -151,15 +144,15 @@ cask 'vulkan-sdk' do
               "VkLayer_api_dump",
               "VkLayer_khronos_validation",
               ]
-    
+
     layers.each do |layer|
         layer_filename = "#{VK_LAYER}/#{layer}.json"
         FileUtils.ln_sf layer_filename, DEST_LAYER
-        
+
         unless layer == "VkLayer_standard_validation"
           #fix the file path in the json file
           file = File.read(layer_filename)
-          
+
           data_hash = JSON.parse(file)
           layer_lib_filename = "lib#{layer}.dylib"
           data_hash["layer"]["library_path"] = "#{DEST_LIB}/#{layer_lib_filename}"
@@ -181,13 +174,13 @@ cask 'vulkan-sdk' do
                       "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",
                       "#{DEST_LIB}/libvulkan.1.dylib",
                       "#{DEST_LIB}/libvulkan.dylib",
-    
+
                       "#{DEST_LIB}/libshaderc_shared.1.dylib",
                       "#{DEST_LIB}/libshaderc_shared.dylib",
-    
+
                       "#{DEST_LIB}/libMoltenVK.dylib",
                       "#{DEST_LIB}/libSPIRV-Tools-shared.dylib",
-    
+
                       "#{DEST_LIB}/libVkLayer_api_dump.dylib",
                       "#{DEST_LIB}/libVkLayer_core_validation.dylib",
                       "#{DEST_LIB}/libVkLayer_khronos_validation.dylib",
