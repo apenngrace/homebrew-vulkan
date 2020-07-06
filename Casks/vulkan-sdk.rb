@@ -111,14 +111,7 @@ cask 'vulkan-sdk' do
     FileUtils.ln_sf "#{VK_LIB}/libSPIRV-Tools-shared.dylib",            DEST_LIB
 
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_api_dump.dylib",              DEST_LIB
-    FileUtils.ln_sf "#{VK_LIB}/libVkLayer_core_validation.dylib",       DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_khronos_validation.dylib",    DEST_LIB
-    FileUtils.ln_sf "#{VK_LIB}/libVkLayer_object_lifetimes.dylib",      DEST_LIB
-    FileUtils.ln_sf "#{VK_LIB}/libVkLayer_stateless_validation.dylib",  DEST_LIB
-    FileUtils.ln_sf "#{VK_LIB}/libVkLayer_thread_safety.dylib",         DEST_LIB
-    FileUtils.ln_sf "#{VK_LIB}/libVkLayer_unique_objects.dylib",        DEST_LIB
-
-
 
     #VULKAN ICD FOR MACOS
     #===============================================
@@ -180,14 +173,8 @@ cask 'vulkan-sdk' do
 
                       "#{DEST_LIB}/libMoltenVK.dylib",
                       "#{DEST_LIB}/libSPIRV-Tools-shared.dylib",
-
                       "#{DEST_LIB}/libVkLayer_api_dump.dylib",
-                      "#{DEST_LIB}/libVkLayer_core_validation.dylib",
                       "#{DEST_LIB}/libVkLayer_khronos_validation.dylib",
-                      "#{DEST_LIB}/libVkLayer_object_lifetimes.dylib",
-                      "#{DEST_LIB}/libVkLayer_stateless_validation.dylib",
-                      "#{DEST_LIB}/libVkLayer_thread_safety.dylib",
-                      "#{DEST_LIB}/libVkLayer_unique_objects.dylib"
                     ]
 
   uninstall delete: '/usr/local/share/vulkan'
