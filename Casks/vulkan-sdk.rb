@@ -1,6 +1,6 @@
 cask 'vulkan-sdk' do
-  version '1.2.141.2'
-  sha256 '3f53554a6f947dcce71924a777e195f0fe094c2bfbbcd4000a595c72f31b54fd'
+  version '1.2.148.0'
+  sha256 '54042a138f6497a3cf173a56449cb7310e9a9d4934c4ec3f65c7b0b3e43cb848'
 
   url "https://sdk.lunarg.com/sdk/download/#{version}/mac/vulkansdk-macos-#{version}.dmg?Human=true"
   name 'LunarG Vulkan SDK'
@@ -34,6 +34,8 @@ cask 'vulkan-sdk' do
   #Vulkan Executable Binaries to Install
   #==============================
 
+  binary "#{VK_BIN}/dxc"
+  binary "#{VK_BIN}/dxc-3.7"
   binary "#{VK_BIN}/glslangValidator"
   binary "#{VK_BIN}/glslc"
   binary "#{VK_BIN}/spirv-as"
@@ -64,7 +66,9 @@ cask 'vulkan-sdk' do
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan.h",             DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan.hpp",           DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_android.h",     DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_beta.h",        DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_core.h",        DEST_INCLUDE
+    FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_directfb.h",    DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_fuchsia.h",     DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_ggp.h",         DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vulkan_ios.h",         DEST_INCLUDE
@@ -98,20 +102,34 @@ cask 'vulkan-sdk' do
     FileUtils.ln_sf "#{SHADERC_INCLUDE}/visibility.h", DEST_INCLUDE_SHADERC
 
     #VULKAN DYLIB FILES
-    #===============================================
     #Versioned libvulkan libraries
-    FileUtils.ln_sf "#{VK_LIB}/libvulkan.#{lib_version}.dylib",     DEST_LIB
-    FileUtils.ln_sf "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",   "#{DEST_LIB}/libvulkan.1.dylib"
-    FileUtils.ln_sf "#{DEST_LIB}/libvulkan.1.dylib",                "#{DEST_LIB}/libvulkan.dylib"
-
-    FileUtils.ln_sf "#{VK_LIB}/libshaderc_shared.1.dylib",          "#{DEST_LIB}/libshaderc_shared.1.dylib"
-    FileUtils.ln_sf "#{DEST_LIB}/libshaderc_shared.1.dylib",        "#{DEST_LIB}/libshaderc_shared.dylib"
-
+    #===============================================
     FileUtils.ln_sf "#{VK_LIB}/libMoltenVK.dylib",                      DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libSPIRV-Tools-shared.dylib",            DEST_LIB
 
+    #Validation Layer Dylibs
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_api_dump.dylib",              DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_khronos_validation.dylib",    DEST_LIB
+
+    #DX Compiler
+    FileUtils.ln_sf "#{VK_LIB}/libdxcompiler.3.7.dylib",                DEST_LIB
+    FileUtils.ln_sf "#{DEST_LIB}/libdxcompiler.3.7.dylib",              "#{DEST_LIB}/libdxcompiler.dylib"
+  
+    #ShaderC
+    FileUtils.ln_sf "#{VK_LIB}/libshaderc_shared.1.dylib",              DEST_LIB
+    FileUtils.ln_sf "#{DEST_LIB}/libshaderc_shared.1.dylib",            "#{DEST_LIB}/libshaderc_shared.dylib"
+    
+    #SPIRV Cross C
+    FileUtils.ln_sf "#{VK_LIB}/libspirv-cross-c-shared.0.36.0.dylib",   DEST_LIB
+    FileUtils.ln_sf "#{DEST_LIB}/libspirv-cross-c-shared.0.36.0.dylib", "#{DEST_LIB}/libspirv-cross-c-shared.0.dylib"
+    FileUtils.ln_sf "#{DEST_LIB}/libspirv-cross-c-shared.0.dylib",      "#{DEST_LIB}/libspirv-cross-c-shared.dylib"
+    
+    #Vulkan
+    FileUtils.ln_sf "#{VK_LIB}/libvulkan.#{lib_version}.dylib",         DEST_LIB
+    FileUtils.ln_sf "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",       "#{DEST_LIB}/libvulkan.1.dylib"
+    FileUtils.ln_sf "#{DEST_LIB}/libvulkan.1.dylib",                    "#{DEST_LIB}/libvulkan.dylib"
+                                                                        
+                                                                        
 
     #VULKAN ICD FOR MACOS
     #===============================================
@@ -163,18 +181,31 @@ cask 'vulkan-sdk' do
   uninstall delete: DEST_INCLUDE_PORT
   uninstall delete: DEST_INCLUDE_SHADERC
 
-  uninstall delete: [
-                      "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",
-                      "#{DEST_LIB}/libvulkan.1.dylib",
-                      "#{DEST_LIB}/libvulkan.dylib",
+  uninstall delete: [                      
+                      "#{DEST_LIB}/libMoltenVK.dylib",                
+                      "#{DEST_LIB}/libSPIRV-Tools-shared.dylib",      
 
-                      "#{DEST_LIB}/libshaderc_shared.1.dylib",
+                      #Validation Layer Dylibs
+                      "#{DEST_LIB}/libVkLayer_api_dump.dylib",   
+                      "#{DEST_LIB}/libVkLayer_khronos_validation.dylib",   
+
+                      #DX Compiler
+                      "#{DEST_LIB}/libdxcompiler.3.7.dylib",
+                      "#{DEST_LIB}/libdxcompiler.dylib",
+  
+                      #ShaderC
+                      "#{DEST_LIB}/libshaderc_shared.1.dylib",            
                       "#{DEST_LIB}/libshaderc_shared.dylib",
-
-                      "#{DEST_LIB}/libMoltenVK.dylib",
-                      "#{DEST_LIB}/libSPIRV-Tools-shared.dylib",
-                      "#{DEST_LIB}/libVkLayer_api_dump.dylib",
-                      "#{DEST_LIB}/libVkLayer_khronos_validation.dylib",
+    
+                      #SPIRV Cross C
+                      "#{DEST_LIB}/libspirv-cross-c-shared.0.36.0.dylib", 
+                      "#{DEST_LIB}/libspirv-cross-c-shared.0.dylib",
+                      "#{DEST_LIB}/libspirv-cross-c-shared.dylib",
+    
+                      #Vulkan
+                      "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",       
+                      "#{DEST_LIB}/libvulkan.1.dylib",
+                      "#{DEST_LIB}/libvulkan.dylib"
                     ]
 
   uninstall delete: '/usr/local/share/vulkan'
