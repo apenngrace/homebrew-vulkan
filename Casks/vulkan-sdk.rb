@@ -160,7 +160,6 @@ cask 'vulkan-sdk' do
         layer_filename = "#{VK_LAYER}/#{layer}.json"
         FileUtils.ln_sf layer_filename, DEST_LAYER
 
-        unless layer == "VkLayer_standard_validation"
           #fix the file path in the json file
           file = File.read(layer_filename)
 
@@ -171,8 +170,6 @@ cask 'vulkan-sdk' do
           File.open(layer_filename, "w") do |f|
               f.write( JSON.pretty_generate(data_hash) + "\n" )
           end
-        end
-
     end
   end
 
