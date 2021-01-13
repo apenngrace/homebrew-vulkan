@@ -1,6 +1,6 @@
 cask 'vulkan-sdk' do
-  version '1.2.162.0'
-  sha256 'd5d25d801eb83130db1e41fa6c09f125ba57e7503ae81553182ba7196f32a0a3'
+  version '1.2.162.1'
+  sha256 '2781c334997598c2828d8a3368aef7b7c94a25204c90d5503396e40c7a03fd5c'
 
   url "https://sdk.lunarg.com/sdk/download/#{version}/mac/vulkansdk-macos-#{version}.dmg?Human=true"
   name 'LunarG Vulkan SDK'
@@ -16,8 +16,10 @@ cask 'vulkan-sdk' do
   MVK_INCLUDE     = "#{staged_path}/MoltenVK/include/MoltenVK"
   PORT_INCLUDE    = "#{staged_path}/MoltenVK/include/vulkan-portability"
   SHADERC_INCLUDE = "#{staged_path}/macOS/include/shaderc"
-  VK_ICD          = "#{staged_path}/macOS/share/vulkan/icd.d"
-  VK_LAYER        = "#{staged_path}/macOS/share/vulkan/explicit_layer.d"
+  VK_SHARE_ICD             = "#{staged_path}/macOS/share/vulkan/icd.d"
+  VK_SHARE_LAYER           = "#{staged_path}/macOS/share/vulkan/explicit_layer.d"
+  VK_SHARE_CONFIG          = "#{staged_path}/macOS/share/vulkan/config/VK_LAYER_LUNARG_device_simulation"
+  VK_SHARE_REGISTRY        = "#{staged_path}/macOS/share/vulkan/registry"
 
   DEST_BIN             = "/usr/local/bin"
   DEST_LIB             = "/usr/local/lib"
@@ -25,8 +27,10 @@ cask 'vulkan-sdk' do
   DEST_INCLUDE_MVK     = "/usr/local/include/MoltenVK"
   DEST_INCLUDE_PORT    = "/usr/local/include/vulkan-portability"
   DEST_INCLUDE_SHADERC = "/usr/local/include/shaderc"
-  DEST_ICD             = "/usr/local/share/vulkan/icd.d"
-  DEST_LAYER           = "/usr/local/share/vulkan/explicit_layer.d"
+  DEST_SHARE_ICD             = "/usr/local/share/vulkan/icd.d"
+  DEST_SHARE_LAYER           = "/usr/local/share/vulkan/explicit_layer.d"
+  DEST_SHARE_CONFIG          = "/usr/local/share/vulkan/config/VK_LAYER_LUNARG_device_simulation"
+  DEST_SHARE_REGISTRY        = "/usr/local/share/vulkan/registry"
 
   mylist = version.split(".")
   lib_version = mylist[0] + "." + mylist[1] + "." + mylist[2]
@@ -61,6 +65,7 @@ cask 'vulkan-sdk' do
     #===============================================
     FileUtils.mkdir_p(DEST_INCLUDE) unless Dir.exist?(DEST_INCLUDE)
 
+    FileUtils.ln_sf "#{VK_INCLUDE}/vk_enum_string_helper.h", DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vk_icd.h",             DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vk_layer.h",           DEST_INCLUDE
     FileUtils.ln_sf "#{VK_INCLUDE}/vk_platform.h",        DEST_INCLUDE
@@ -108,6 +113,7 @@ cask 'vulkan-sdk' do
     #===============================================
     FileUtils.ln_sf "#{VK_LIB}/libMoltenVK.dylib",                      DEST_LIB
     FileUtils.ln_sf "#{VK_LIB}/libSPIRV-Tools-shared.dylib",            DEST_LIB
+    FileUtils.ln_sf "#{VK_LIB}/libVkLayer_device_simulation.dylib",     DEST_LIB
 
     #Validation Layer Dylibs
     FileUtils.ln_sf "#{VK_LIB}/libVkLayer_api_dump.dylib",              DEST_LIB
@@ -122,8 +128,8 @@ cask 'vulkan-sdk' do
     FileUtils.ln_sf "#{DEST_LIB}/libshaderc_shared.1.dylib",            "#{DEST_LIB}/libshaderc_shared.dylib"
     
     #SPIRV Cross C
-    FileUtils.ln_sf "#{VK_LIB}/libspirv-cross-c-shared.0.36.0.dylib",   DEST_LIB
-    FileUtils.ln_sf "#{DEST_LIB}/libspirv-cross-c-shared.0.36.0.dylib", "#{DEST_LIB}/libspirv-cross-c-shared.0.dylib"
+    FileUtils.ln_sf "#{VK_LIB}/libspirv-cross-c-shared.0.44.0.dylib",   DEST_LIB
+    FileUtils.ln_sf "#{DEST_LIB}/libspirv-cross-c-shared.0.44.0.dylib", "#{DEST_LIB}/libspirv-cross-c-shared.0.dylib"
     FileUtils.ln_sf "#{DEST_LIB}/libspirv-cross-c-shared.0.dylib",      "#{DEST_LIB}/libspirv-cross-c-shared.dylib"
     
     #Vulkan
@@ -135,23 +141,23 @@ cask 'vulkan-sdk' do
 
     #VULKAN ICD FOR MACOS
     #===============================================
-    FileUtils.mkdir_p(DEST_ICD) unless Dir.exist?(DEST_ICD)
-    FileUtils.ln_sf "#{VK_ICD}/MoltenVK_icd.json", DEST_ICD
+    FileUtils.mkdir_p(DEST_SHARE_ICD) unless Dir.exist?(DEST_SHARE_ICD)
+    FileUtils.ln_sf "#{VK_SHARE_ICD}/MoltenVK_icd.json", DEST_SHARE_ICD
 
     #The relative file path in this json file is invalid once these files are installed
     #in system directories.  So replace that path with an absolute path.
-    file = File.read("#{VK_ICD}/MoltenVK_icd.json")
+    file = File.read("#{VK_SHARE_ICD}/MoltenVK_icd.json")
 
     data_hash = JSON.parse(file)
     data_hash["ICD"]["library_path"] = "#{DEST_LIB}/libMoltenVK.dylib"
 
-    File.open("#{VK_ICD}/MoltenVK_icd.json", "w") do |f|
+    File.open("#{VK_SHARE_ICD}/MoltenVK_icd.json", "w") do |f|
         f.write( JSON.pretty_generate(data_hash) + "\n" )
     end
 
     #VULKAN LAYERS FOR DEBUGGING
     #===============================================
-    FileUtils.mkdir_p(DEST_LAYER) unless Dir.exist?(DEST_LAYER)
+    FileUtils.mkdir_p(DEST_SHARE_LAYER) unless Dir.exist?(DEST_SHARE_LAYER)
 
     layers = [
               "VkLayer_api_dump",
@@ -159,8 +165,8 @@ cask 'vulkan-sdk' do
               ]
 
     layers.each do |layer|
-        layer_filename = "#{VK_LAYER}/#{layer}.json"
-        FileUtils.ln_sf layer_filename, DEST_LAYER
+        layer_filename = "#{VK_SHARE_LAYER}/#{layer}.json"
+        FileUtils.ln_sf layer_filename, DEST_SHARE_LAYER
 
           #fix the file path in the json file
           file = File.read(layer_filename)
@@ -173,6 +179,17 @@ cask 'vulkan-sdk' do
               f.write( JSON.pretty_generate(data_hash) + "\n" )
           end
     end
+    
+    #VULKAN DEVICE SIMULATION (hope this works)
+    #===============================================
+    FileUtils.mkdir_p(DEST_SHARE_CONFIG) unless Dir.exist?(DEST_SHARE_CONFIG)
+    FileUtils.ln_sf "#{VK_SHARE_CONFIG}/iOS_gpu_family_3_portability.json", DEST_SHARE_CONFIG
+    FileUtils.ln_sf "#{VK_SHARE_CONFIG}/iOS_gpu_family_5_portability.json", DEST_SHARE_CONFIG
+    FileUtils.ln_sf "#{VK_SHARE_CONFIG}/macOS_gpu_family_1_portability.json", DEST_SHARE_CONFIG
+    
+    FileUtils.mkdir_p(DEST_SHARE_REGISTRY) unless Dir.exist?(DEST_SHARE_REGISTRY)
+    FileUtils.ln_sf "#{VK_SHARE_REGISTRY}/vk.xml", DEST_SHARE_REGISTRY
+    
   end
 
   uninstall delete: DEST_INCLUDE
@@ -204,7 +221,10 @@ cask 'vulkan-sdk' do
                       #Vulkan
                       "#{DEST_LIB}/libvulkan.#{lib_version}.dylib",       
                       "#{DEST_LIB}/libvulkan.1.dylib",
-                      "#{DEST_LIB}/libvulkan.dylib"
+                      "#{DEST_LIB}/libvulkan.dylib",
+                      
+                      #Device Simulation
+                      "#{DEST_LIB}/libVkLayer_device_simulation.dylib"
                     ]
 
   uninstall delete: '/usr/local/share/vulkan'
